@@ -1,8 +1,13 @@
+(* Combinational.v
 
+   # Contents
 
+   1. Relations as Semantic Domain Model
+   2. ...
 
+   # Explanation of Basic Idea
 
-(* First, we will provide a bunch of definitions
+   First, we will provide a bunch of definitions
    for relations, as well as a notion of equivalence
    between two similarly typed relations.
 
@@ -14,33 +19,38 @@
 
 Definition Rel (X Y : Type) := X -> Y -> Prop.
 
-Definition iff_rel {X Y : Type} (R S : Rel X Y) :=
-  forall x y, R x y <-> S x y.
 
-Notation "R <=> S" := (iff_rel R S) (at level 90) : type_scope.
+Section Relational_Equivalence.
+  Context {X Y : Type}.
 
-Theorem iff_rel_refl {X Y : Type} : forall (R : Rel X Y), R <=> R.
-Proof.
-  intros R x y.
-  apply iff_refl.
-Qed.
+  Definition iff_rel (R S : Rel X Y) :=
+    forall x y, R x y <-> S x y.
 
-Theorem iff_rel_trans {X Y : Type} :
-  forall (R S T : Rel X Y), (R <=> S) -> (S <=> T) -> (R <=> T).
-Proof.
-  intros R S T RS ST x y.
-  apply (iff_trans (B := S x y)); auto.
-Qed.
+  Notation "R <=> S" := (iff_rel R S) (at level 90) : type_scope.
 
-Theorem iff_rel_sym {X Y : Type} :
-  forall (R S : Rel X Y), (R <=> S) -> (S <=> R).
-Proof.
-  intros R S RS x y.
-  apply iff_sym; auto.
-Qed.
+  Theorem iff_rel_refl : forall (R : Rel X Y), R <=> R.
+  Proof.
+    intros R x y.
+    apply iff_refl.
+  Qed.
+
+  Theorem iff_rel_trans :
+    forall (R S T : Rel X Y), (R <=> S) -> (S <=> T) -> (R <=> T).
+  Proof.
+    intros R S T RS ST x y.
+    apply (iff_trans (B := S x y)); auto.
+  Qed.
+
+  Theorem iff_rel_sym :
+    forall (R S : Rel X Y), (R <=> S) -> (S <=> R).
+  Proof.
+    intros R S RS x y.
+    apply iff_sym; auto.
+  Qed.
+End Relational_Equivalence.
+
 
 Section Relational_Operators.
-  
   (* parallel composition of relations
      is equivalent to their tensor product
 
@@ -113,14 +123,6 @@ Section Relational_Operators.
     lift_f_rel (fun '((x,y),z) => (x,(y,z))).
 
 End Relational_Operators.
-
-(* just a random sanity check here right now *)
-Lemma id_transp_id {X} : transp_rel (@id_rel X) <=> (@id_rel X).
-Proof.
-  intros x x'.
-  unfold id_rel; unfold transp_rel; unfold lift_f_rel; simpl.
-  split; intro H; auto.
-Qed.
 
 
 
@@ -622,5 +624,6 @@ Compute (RS_enum true true).
 Compute (RS_enum true false).
 Compute (RS_enum false true).
 Compute (RS_enum false false).
+
 
 
